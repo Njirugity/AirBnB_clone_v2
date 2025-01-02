@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
-from models.base_model import BaseModel
-from sqlalchemy import Column, String
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String, ForeignKey, Integer, Float
 from sqlalchemy.orm import relationship
 from os import getenv
 
 
-class Place(BaseModel):
+class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
@@ -20,13 +20,16 @@ class Place(BaseModel):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     amenity_ids = []
-    reviews = relationship('Review', backref='place', cascade='all, delete, delete-orphan')
 
     if getenv("HBNB_TYPE_STORAGE") == "db":
-        reviews = relationship('Review', backref='place', cascade='all, delete, delete-orphan')
+        reviews = relationship(
+                'Review', backref='place',
+                cascade='all, delete, delete-orphan'
+                )
     else:
         @property
         def reviews(self):
             """Getter for FileStorage betwn Place and Review"""
             from models import storage
-            return [review for review in storage.all(Review).values() if review.place_id == self.id]
+            return [review for review in storage.all(Review).values()
+                    if review.place_id == self.id]
