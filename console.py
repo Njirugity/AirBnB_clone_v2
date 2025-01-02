@@ -36,7 +36,8 @@ class HBNBCommand(cmd.Cmd):
             print('(hbnb)')
 
     def precmd(self, line):
-setup_mysql_dev.sql        """Reformat command line for advanced command syntax.
+        setup_mysql_dev.sql
+        """Reformat command line for advanced command syntax.
 
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
