@@ -8,14 +8,9 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self, cls=None):
+    def all(self):
         """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return FileStorage.__objects
-        return {
-                key: val for key, val in FileStorage.__objects.items()
-                if isinstance(val, cls)
-                }
+        return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -23,11 +18,6 @@ class FileStorage:
 
     def save(self):
         """Saves storage dictionary to file"""
-        objects = {}
-        for key, obj in self.all().items():
-            obj_dict = obj.to_dict()
-            obj_dict['__class__'] = obj.__class__.__name__
-            objects[key] = obj_dict
         with open(FileStorage.__file_path, 'w') as f:
             temp = {}
             temp.update(FileStorage.__objects)
@@ -44,27 +34,18 @@ class FileStorage:
         from models.city import City
         from models.amenity import Amenity
         from models.review import Review
-
+        
         classes = {
-                'BaseModel': BaseModel,
-                'User': User,
-                'Place': Place,
-                'State': State,
-                'City': City,
-                'Amenity': Amenity,
-                'Review': Review
-                }
+                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
+                    'State': State, 'City': City, 'Amenity': Amenity,
+                    'Review': Review
+                  }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                    class_name = val.get('__class__')
-                    if class_name and class_name in classes:
-                        val.pop('__class__', None)
-                        self.all()[key] = classes[class_name](**val)
-                    else:
-                        print(f"Warning: Class {class_name} not found or invalid.")
+                        self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
 
@@ -77,7 +58,6 @@ class FileStorage:
             if key in FileStorage.__objects:
                 del FileStorage.__objects[key]
 
-    
     def close(self):
         """ calls reload()
         """
