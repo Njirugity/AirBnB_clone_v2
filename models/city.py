@@ -5,6 +5,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 from models.place import Place
 
+
 class City(BaseModel, Base):
     """ The city class, contains state ID and name """
 

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" new class for sqlAlchemy """
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
@@ -12,6 +13,7 @@ from models.amenity import Amenity
 
 
 class DBStorage:
+    """ create tables in environmental"""
     __engine = None
     __session = None
 
@@ -30,8 +32,14 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
+        """returns a dictionary
+        Return:
+            returns a dictionary of __object
+        """
         new_dict = {}
         if cls:
+            if type(cls) is str:
+                cls = eval(cls)
             obj = self.__session.query(cls).all
             for i in obj:
                 key = f"{cls.__name}.{i.id}"
@@ -48,16 +56,22 @@ class DBStorage:
         return (new_dict)
     
     def new(self, obj):
+        """add a new element in the table
+        """
+
         self.__session.add(obj)
 
     def save(self):
+        """save changes"""
         self.__session.commit()
 
     def delete(self, obj=None):
+        """delete an element"""
         if obj:
             self.__session.delete(obj)
 
     def reload(self):
+        """configuration"""
         Base.metadata.create_all(self.__engine)
         session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(session)
